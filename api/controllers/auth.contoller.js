@@ -1,13 +1,17 @@
 import User from "../models/user.model.js";
 import bcryptjs from "bcryptjs";
+import { errorHandler } from "../utils/error.js";
 
-export const signup = async (req, res) => {
+
+// Signup route  - POST /api/auth/signup
+export const signup = async (req, res, next) => {
     const { username, email, password } = req.body;
-if (!username ||!email ||!password || username === "" || email === "" || password === "") {
-return res.status(400).json({ message: 'Please fill all fields' });
-
+if (!username ||!email ||!password || username === "" || email === "" || password === "")
+     {
+next(errorHandler(400, 'Please provide all the required fields'));
 }
 
+// Hashing the password before saving it to the database
 const hashPassword = await bcryptjs.hashSync(password, 10);
 
 const newUser = new User({ 
@@ -21,6 +25,7 @@ try {
 res.status(201).json({ message: 'User registered successfully' });
 
 } catch (error) {
-    res.status(500).json({ message: error.message });
+
+    next(error);
  }    
 } 

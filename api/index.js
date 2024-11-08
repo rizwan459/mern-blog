@@ -27,3 +27,13 @@ console.log(err);
 
  app.use('/api/user', userRoutes);
  app.use('/api/auth', authRoutes);
+
+ app.use((err, req, res, next) => {
+   const statusCode = res.statusCode || 500;
+   const message = err.message || 'Server error';
+   res.status(statusCode).json({ 
+      success: false,
+      statusCode,
+      message,
+       });
+   });
