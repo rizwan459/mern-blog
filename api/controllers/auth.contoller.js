@@ -10,7 +10,8 @@ if (!username ||!email ||!password || username === "" || email === "" || passwor
      {
 next(errorHandler(400, 'Please provide all the required fields'));
 }
-
+else {
+    
 // Hashing the password before saving it to the database
 const hashPassword = await bcryptjs.hashSync(password, 10);
 
@@ -27,5 +28,6 @@ res.status(201).json({ message: 'User registered successfully' });
 } catch (error) {
 
     next(error);
- }    
+ }   
+} 
 } 
