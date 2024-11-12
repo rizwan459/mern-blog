@@ -8,7 +8,7 @@ export const signup = async (req, res, next) => {
     const { username, email, password } = req.body;
 if (!username ||!email ||!password || username === "" || email === "" || password === "")
      {
-next(errorHandler(400, 'Please provide all the required fields'));
+return next(errorHandler(400, 'Please provide all the required fields in next errorHandler'));
 }
 else {
     
@@ -25,7 +25,7 @@ try {
     await newUser.save();
 res.status(201).json({ message: 'User registered successfully' });
 
-} catch (error) {
+} catch (error) { 
 
     next(error);
  }   

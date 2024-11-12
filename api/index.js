@@ -28,6 +28,7 @@ console.log(err);
  app.use('/api/user', userRoutes);
  app.use('/api/auth', authRoutes);
 
+ //Add a middleware and a function to handle errors (01:42:57)
  app.use((err, req, res, next) => {
    const statusCode = res.statusCode || 500;
    const message = err.message || 'Server error';

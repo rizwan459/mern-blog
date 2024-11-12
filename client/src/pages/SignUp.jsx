@@ -1,35 +1,45 @@
-import { Button, Label, TextInput } from 'flowbite-react'
+import { Alert, Button, Label, TextInput } from 'flowbite-react'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
 export default function SignUp() {
-  const [formData, setFormData] = React.useState({
-
-  })
+  const [formData, setFormData] = React.useState({ });
+  const [errorMessage, setErrorMessage] = React.useState(null);
+  const [loading, setLoading] = React.useState(false);
+  const [successMessage, setSuccessMessage] = React.useState(null);
   
   const handleChange = async (e) => {
-    setFormData({...formData, [e.target.id]: e.target.value })
+    setFormData({...formData, [e.target.id]: e.target.value.trim() })
   }
 
-     console.log(formData);
+     console.log(formData); 
   
 const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.username ||!formData.email ||!formData.password) {
+      return setErrorMessage('Please provide all the required fields');
+     // return;
+    }
     // call your API to sign up user here
 try {
-
   const res = await fetch('/api/auth/signup', {
-
      method: 'POST',
-     headers: {
-       'Content-Type': 'application/json',
-     },
+     headers: {'Content-Type': 'application/json' },
      body: JSON.stringify(formData),
    });
    const data = await res.json();
-   console.log(data);
- } 
- 
+   if (data.success === false) {
+     return setErrorMessage(data.message);
+       
+ } else {
+  return (
+setErrorMessage(null) && setSuccessMessage(data.message)
+  )
+  
+
+ }
+   
+}
 catch (error) {
   console.log(error);
 
@@ -78,9 +88,21 @@ catch (error) {
 </Button>
     </form>
     <div className='mt-5'>
-    <p><span>Already have an account? </span>
-    <Link to="/signin" className='text-blue-500 font-bold'>Sign in</Link></p>
+    <span>Already have an account? </span>
+    <Link to="/signin" className='text-blue-500 font-bold'>
+    Sign in
+    </Link>
     </div>
+    {errorMessage && (    
+      <Alert className='mt-5' color='failure'>{errorMessage}</Alert>
+
+)}
+
+{successMessage && (    
+      <Alert className='mt-5' color='success'>{successMessage}</Alert>
+
+)}
+
   </div>
 </div>
 
