@@ -1,12 +1,14 @@
-import { Alert, Button, Label, TextInput } from 'flowbite-react'
+import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react'
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function SignUp() {
   const [formData, setFormData] = React.useState({ });
   const [errorMessage, setErrorMessage] = React.useState(null);
   const [loading, setLoading] = React.useState(false);
   const [successMessage, setSuccessMessage] = React.useState(null);
+  const navigate = useNavigate();
   
   const handleChange = async (e) => {
     setFormData({...formData, [e.target.id]: e.target.value.trim() })
@@ -18,10 +20,12 @@ const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.username ||!formData.email ||!formData.password) {
       return setErrorMessage('Please provide all the required fields');
-     // return;
+
     }
     // call your API to sign up user here
 try {
+  setLoading(true);
+  setErrorMessage(null);
   const res = await fetch('/api/auth/signup', {
      method: 'POST',
      headers: {'Content-Type': 'application/json' },
@@ -30,20 +34,23 @@ try {
    const data = await res.json();
    if (data.success === false) {
      return setErrorMessage(data.message);
-       
- } else {
-  return (
-setErrorMessage(null) && setSuccessMessage(data.message)
-  )
-  
+ 
+ } 
+ else {
+  setSuccessMessage(data.message);
+    setLoading(false);
+    setErrorMessage(null);
 
- }
+   }
    
+   if (res.ok) {
+    navigate('/signin');
+  }
 }
 catch (error) {
-  console.log(error);
-
-};
+  setErrorMessage(error.message);
+  setLoading(false);
+}
  
      };
   return (
@@ -81,9 +88,17 @@ catch (error) {
 <TextInput type='password' placeholder='Password' id='password' onChange={handleChange}/>
 </div>
 
-<Button gradientDuoTone='purpleToPink' type='submit'>
+<Button gradientDuoTone='purpleToPink' type='submit' disabled={loading}>
 
-  Sign Up
+  {
+  loading ? (
+  <>
+      <Spinner size='sm' />
+    <span className='pl-3'>Loading... </span>
+  </>
+
+   ) : 'Sign Up'  
+   }
  
 </Button>
     </form>
