@@ -81,7 +81,7 @@ export default function FooterCom() {
             
         </div>
         <FooterDivider />
-<div className='w-full sm:flex sm:items-center sm:justify-between'> 
+<div className='w-full sm:flex sm:items-center sm:justify-between font-bold'> 
 <Footer.Copyright 
         href='#' 
         by='Rizwan Blog'
