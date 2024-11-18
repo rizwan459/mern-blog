@@ -2,6 +2,7 @@ import { Alert, Button, Label, Spinner, TextInput } from 'flowbite-react'
 import React from 'react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import OAuth from '../components/OAuth';
 
 export default function SignUp() {
   const [formData, setFormData] = React.useState({ });
@@ -14,7 +15,7 @@ export default function SignUp() {
     setFormData({...formData, [e.target.id]: e.target.value.trim() })
   }
 
-     console.log(formData); 
+   // deletethis  console.log(formData); 
   
 const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,6 +34,7 @@ try {
    });
    const data = await res.json();
    if (data.success === false) {
+    setLoading(false);
      return setErrorMessage(data.message);
  
  } 
@@ -101,7 +103,8 @@ catch (error) {
    }
  
 </Button>
-    </form>
+<OAuth />
+      </form>
     <div className='mt-5'>
     <span>Already have an account? </span>
     <Link to="/signin" className='text-blue-500 font-bold'>
