@@ -25,12 +25,17 @@ export default function DashSidebar() {
               icon={HiUser}
               label={"user"}
               labelColor="dark"
+              as="div"
             >
               Profile
             </Sidebar.Item>
           </Link>
           <Link to="/Dashboard?tab=signout">
-            <Sidebar.Item icon={HiArrowSmRight} className="cursor-pointer">
+            <Sidebar.Item
+              icon={HiArrowSmRight}
+              className="cursor-pointer"
+              as="div"
+            >
               Sigh Out
             </Sidebar.Item>
           </Link>
