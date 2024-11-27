@@ -125,11 +125,8 @@ export default function DashProfile() {
       dispatch(updateFailure(error.message));
       setUpdateUserFailure(error.message);
     }
-
-    //...
   };
 
-  console.log(formData);
   return (
     <div className="max-w-lg mx-auto p-3 w-full">
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
