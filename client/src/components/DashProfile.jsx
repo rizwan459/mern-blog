@@ -11,6 +11,12 @@ import {
 import { app } from "../firebase";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import {
+  updateStart,
+  updateSuccess,
+  updateFailure,
+} from "../redux/user/userSlice";
+import { useDispatch } from "react-redux";
 
 export default function DashProfile() {
   const { currentUser } = useSelector((state) => state.user);
@@ -18,8 +24,13 @@ export default function DashProfile() {
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
   const [imageFileUploadError, setImageFileUploadError] = useState(null);
-  console.log(imageFileUploadProgress, imageFileUploadError);
+  const [imageFileUploading, setImageFileUploading] = useState(null);
+  const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
+  const [updateUserFailure, setUpdateUserFailure] = useState(null);
+  const [formData, setFormData] = useState({});
   const filePickerRef = useRef();
+  const dispatch = useDispatch();
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -43,6 +54,7 @@ export default function DashProfile() {
     //     }
     //   }
     // }
+    setImageFileUploading(true);
     setImageFileUploadError(null);
     setImageFileUploadProgress(null);
     const storage = getStorage(app);
@@ -69,14 +81,58 @@ export default function DashProfile() {
           //setImageFileUploadError(null);
           setImageFileUrl(downloadURL);
           setFormData({ ...formData, profilePicture: downloadURL });
+          setImageFileUploading(false);
         });
       }
     );
   };
-  //console.log(imageFile, imageFileUrl);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setUpdateUserFailure(null);
+    setUpdateUserSuccess(null);
+
+    if (Object.keys(formData).length === 0) {
+      setUpdateUserFailure("No changes made.");
+      return;
+    }
+    if (imageFileUploading) {
+      setUpdateUserFailure("Please wait while the image is being uploaded.");
+      return;
+    }
+    try {
+      dispatch(updateStart());
+      const res = await fetch(`/api/user/update/${currentUser._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        dispatch(updateFailure(data.message));
+        setUpdateUserFailure(data.message);
+      } else {
+        dispatch(updateSuccess(data));
+        setUpdateUserSuccess("User's profile updated successfully.");
+      }
+    } catch (error) {
+      dispatch(updateFailure(error.message));
+      setUpdateUserFailure(error.message);
+    }
+
+    //...
+  };
+
+  console.log(formData);
   return (
     <div className="max-w-lg mx-auto p-3 w-full">
-      <form className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           type="file"
           accept="image/*"
@@ -131,16 +187,21 @@ export default function DashProfile() {
           id="username"
           placeholder="username"
           defaultValue={currentUser.username}
-          //        onChange={handleChange}
+          onChange={handleChange}
         />
         <TextInput
           type="text"
           id="email"
           placeholder="email"
           defaultValue={currentUser.email}
-          //       onChange={handleChange}
+          onChange={handleChange}
         />
-        <TextInput type="password" id="password" placeholder="password " />
+        <TextInput
+          type="password"
+          id="password"
+          placeholder="password "
+          onChange={handleChange}
+        />
         <Button type="submit" gradientDuoTone="purpleToBlue" outline>
           Update
         </Button>
@@ -149,6 +210,16 @@ export default function DashProfile() {
         <span className="cursor-pointer">Delete Account</span>
         <span className="cursor-pointer">Sign Out</span>
       </div>
+      {updateUserSuccess && (
+        <Alert className="mt-5" color="success">
+          {updateUserSuccess}
+        </Alert>
+      )}
+      {updateUserFailure && (
+        <Alert className="mt-5" color="failure">
+          {updateUserFailure}
+        </Alert>
+      )}
     </div>
   );
 }
