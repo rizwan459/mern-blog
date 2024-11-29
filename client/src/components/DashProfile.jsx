@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
-import { Alert, Avatar, Button, Modal, TextInput } from "flowbite-react";
+import { Alert, Button, Modal, ModalBody, TextInput } from "flowbite-react";
 import { useState } from "react";
 import {
   ref,
@@ -24,7 +24,7 @@ import { useDispatch } from "react-redux";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 export default function DashProfile() {
-  const { currentUser, error } = useSelector((state) => state.user);
+  const { currentUser, error, loading } = useSelector((state) => state.user);
   const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [imageFileUploadProgress, setImageFileUploadProgress] = useState(null);
@@ -119,13 +119,18 @@ export default function DashProfile() {
         },
         body: JSON.stringify(formData),
       });
+
       const data = await res.json();
-      if (!res.ok) {
+
+      if (data.success === false) {
+        return dispatch(updateFailure(data.message));
+      } else if (!res.ok) {
         dispatch(updateFailure(data.message));
         setUpdateUserFailure(data.message);
       } else {
         dispatch(updateSuccess(data));
         setUpdateUserSuccess("User's profile updated successfully.");
+        setFormData({});
       }
     } catch (error) {
       dispatch(updateFailure(error.message));
@@ -162,7 +167,6 @@ export default function DashProfile() {
         console.log(data.message);
       } else {
         dispatch(signOutSuccess());
-        // console.log("user has been signoutsssss");
       }
     } catch (error) {
       console.log(error.message);
@@ -171,6 +175,7 @@ export default function DashProfile() {
 
   return (
     <div className="max-w-lg mx-auto p-3 w-full">
+      <h1 className="my-7 text-center font-semibold text-3xl">Profile</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           type="file"
