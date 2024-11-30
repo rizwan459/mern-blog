@@ -19,7 +19,11 @@ export default function Dashboard() {
       <div className="md:w-56">
         <DashSidebar />
       </div>
-
+      {!tab && (
+        <div className="text-center font-bold font-serif underline">
+          Dashboard
+        </div>
+      )}
       {tab === "profile" && <DashProfile />}
     </div>
   );
