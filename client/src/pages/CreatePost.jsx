@@ -11,12 +11,17 @@ import {
 } from "firebase/storage";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import { useNavigate } from "react-router-dom";
 
 export default function CreatePost() {
   const [postImageFile, setPostImageFile] = useState(null);
   const [imageUloadProgress, setImageUploadProgress] = useState(null);
   const [imageUloadError, setImageUploadError] = useState(null);
+  const [postPublishError, setPostPublishError] = useState(null);
   const [formData, setFormData] = useState({});
+
+  const navigate = useNavigate();
+  // console.log(formData);
   const handleUploadImage = () => {
     try {
       if (!postImageFile) {
@@ -53,19 +58,60 @@ export default function CreatePost() {
       setImageUploadProgress(null);
     }
   };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setPostPublishError(null);
+    try {
+      const res = await fetch("/api/post/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setPostPublishError("data.messageqwqw");
+        return;
+      }
+
+      if (res.ok) {
+        if (data.success === false) {
+          setPostPublishError(data.message);
+          return;
+        }
+        setPostPublishError(null);
+        navigate(`/post/${data.slug}`);
+      }
+    } catch {
+      setPostPublishError("Error creating post");
+    }
+  };
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
       <h1 className="text-center text-3xl my-7 font-semibold">Create a post</h1>
-      <form action="flex flex-col gap-4">
+      <form action="flex flex-col gap-4" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-4 sm:flex-row justify-between">
           <TextInput
             type="text"
             placeholder="Title"
-            required
             id="title"
             className="flex-1"
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                title: e.target.value,
+              })
+            }
           />
-          <Select name="" id="">
+          <Select
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                category: e.target.value,
+              })
+            }
+          >
             <option value="uncategorized">Select a category</option>
             <option value="javascript">JavaScricpt</option>
             <option value="reactjs">React.Js</option>
@@ -115,10 +161,16 @@ export default function CreatePost() {
           placeholder="Write something.."
           className="h-72 mb-12 mt-5"
           required
+          onChange={(value) => setFormData({ ...formData, content: value })}
         />
         <Button type="submit" gradientDuoTone="purpleToPink" className="w-full">
           Publish
         </Button>
+        {postPublishError && (
+          <Alert className="mt-5" color="failure">
+            {postPublishError}
+          </Alert>
+        )}
       </form>
     </div>
   );
