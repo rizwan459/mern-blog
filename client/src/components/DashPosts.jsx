@@ -12,8 +12,9 @@ import { Link } from "react-router-dom";
 
 export default function DashPosts() {
   const { currentUser } = useSelector((state) => state.user);
-  const [userPost, setUserPosts] = useState([]);
-  console.log(userPost);
+  const [userPosts, setUserPosts] = useState([]);
+  const [showMore, setShowMore] = useState(true);
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -21,6 +22,9 @@ export default function DashPosts() {
         const data = await res.json();
         if (res.ok) {
           setUserPosts(data.posts);
+          if (data.posts.length < 9) {
+            setShowMore(false);
+          }
         }
       } catch (error) {
         console.error("Error fetching posts");
@@ -31,9 +35,29 @@ export default function DashPosts() {
     }
   }, [currentUser._id]);
 
+  const handleShowMore = async () => {
+    const startIndex = userPosts.length;
+    try {
+      const res = await fetch(
+        `/api/post/getposts?userId=${currentUser._id}&startIndex=${startIndex}`
+      );
+      const data = await res.json();
+      if (res.ok) {
+        setUserPosts((prevPosts) => [...prevPosts, ...data.posts]);
+        if (data.posts.length < 9) {
+          setShowMore(false);
+        }
+      } else {
+        console.log("Error fetching more posts");
+      }
+    } catch (error) {
+      console.error("Error fetching more posts");
+    }
+  };
+
   return (
     <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
-      {currentUser.isAdmin && userPost.length > 0 ? (
+      {currentUser.isAdmin && userPosts.length > 0 ? (
         <>
           <Table hoverable className="shadow-md">
             <TableHead>
@@ -47,7 +71,7 @@ export default function DashPosts() {
               </Table.HeadCell>
             </TableHead>
             <TableBody className="divide-y">
-              {userPost.map((post) => (
+              {userPosts.map((post) => (
                 <TableRow
                   key={post._id}
                   className=" bg-white dark:border-gray-700 dark:bg-gray-800"
@@ -95,6 +119,14 @@ export default function DashPosts() {
               ))}
             </TableBody>
           </Table>
+          {showMore && (
+            <button
+              onClick={handleShowMore}
+              className="mt-5 w-full text-center text-gray-900 font-medium hover:text-gray-800"
+            >
+              Load More Posts
+            </button>
+          )}
         </>
       ) : (
         <p>You have no posts yet!</p>
