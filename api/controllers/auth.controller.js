@@ -98,9 +98,7 @@ export const google = async (req, res, next) => {
                 httpOnly: true,
             })
                 .json(rest);
-
         }
-
     }
     catch (error) {
         next(error);

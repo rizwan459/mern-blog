@@ -76,4 +76,25 @@ export const getPosts = async (req, res, next) => {
         next(error);
     }
 
-}
+};
+
+
+export const deletePost = async (req, res, next) => {
+    if (!req.user.isAdmin || req.user.id !== req.params.userId) {
+        return next(errorHandler(403, "Only admin users can delete posts"));
+    }
+    try {
+        console.log(req.params);
+        const post = await Post.findByIdAndDelete(req.params.postId);
+        console.log(post);
+        if (!post) {
+            return next(errorHandler(404, "Post not found"));
+        }
+        res.status(200).json(post);
+
+    }
+    catch (error) {
+        next(error); s
+    }
+
+};
