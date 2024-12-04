@@ -1,5 +1,5 @@
 import { Alert, Button, FileInput, TextInput, Select } from "flowbite-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { app } from "../firebase";
@@ -11,18 +11,44 @@ import {
 } from "firebase/storage";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-export default function CreatePost() {
+export default function UpdatePost() {
   const [postImageFile, setPostImageFile] = useState(null);
   const [imageUloadProgress, setImageUploadProgress] = useState(null);
   const [imageUloadError, setImageUploadError] = useState(null);
   const [postPublishError, setPostPublishError] = useState(null);
   const [postPublishSuccess, setPostPublishSuccess] = useState(null);
   const [formData, setFormData] = useState({});
-
+  const { postId } = useParams();
   const navigate = useNavigate();
-  // console.log(formData);
+
+  const { currentUser } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    try {
+      const fetchPost = async () => {
+        // TODO: Implement fetch post by postId from server API.
+        const res = await fetch(`/api/post/getposts?postId=${postId}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          console.log(data.message);
+          setPostPublishError(data.message);
+          return;
+        }
+        if (res.ok) {
+          setPostPublishError(null);
+          setFormData(data.posts[0]);
+        }
+      };
+      fetchPost();
+    } catch (error) {
+      console.log(error.message);
+    }
+  }, [postId]);
+
   const handleUploadImage = () => {
     try {
       if (!postImageFile) {
@@ -62,38 +88,36 @@ export default function CreatePost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setPostPublishError(null);
-    setPostPublishSuccess(null);
+    console.log(formData);
     try {
-      const res = await fetch("/api/post/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(
+        `/api/post/updatepost/${formData._id}/${currentUser._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
       const data = await res.json();
-
       if (!res.ok) {
         setPostPublishError(data.message);
         return;
       }
-
       if (res.ok) {
-        if (data.success === false) {
-          setPostPublishError(data.message);
-          return;
-        }
         setPostPublishError(null);
-        //Remote Comments
+        setPostPublishSuccess("Post has been updated successfully");
         // navigate(`/post/${data.slug}`);
-        setPostPublishSuccess("Post has been created successfully");
       }
-    } catch {
-      setPostPublishError("Error creating post");
+    } catch (error) {
+      setPostPublishError("Something went wrong");
+      console.log(data.message);
     }
   };
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
-      <h1 className="text-center text-3xl my-7 font-semibold">Create a post</h1>
+      <h1 className="text-center text-3xl my-7 font-semibold">Update a post</h1>
       <form action="flex flex-col gap-4" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-4 sm:flex-row justify-between">
           <TextInput
@@ -107,6 +131,7 @@ export default function CreatePost() {
                 title: e.target.value,
               })
             }
+            value={formData.title}
           />
           <Select
             onChange={(e) =>
@@ -115,6 +140,7 @@ export default function CreatePost() {
                 category: e.target.value,
               })
             }
+            value={formData.category}
           >
             <option value="uncategorized">Select a category</option>
             <option value="javascript">JavaScricpt</option>
@@ -157,7 +183,7 @@ export default function CreatePost() {
           <img
             src={formData.image}
             alt="upload"
-            className="w-full-h-72 object-cover"
+            className="w-full h-36 object-cover"
           />
         )}
         <ReactQuill
@@ -166,6 +192,7 @@ export default function CreatePost() {
           className="h-72 mb-12 mt-5"
           required
           onChange={(value) => setFormData({ ...formData, content: value })}
+          value={formData.content}
         />
         <Button type="submit" gradientDuoTone="purpleToPink" className="w-full">
           Publish

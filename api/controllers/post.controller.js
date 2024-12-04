@@ -34,10 +34,11 @@ export const getPosts = async (req, res, next) => {
         const limit = parseInt(req.query.limit) || 9;
         const setDirection = req.query.order === 'asc' ? 1 : -1;
         const posts = await Post.find({
+
             ...(req.query.userId && { userId: req.query.userId }),
             ...(req.query.category && { category: req.query.category }),
-            ...(req.query.slug && { category: req.query.slug }),
-            ...(req.query.postId && { _Id: req.query.postId }),
+            ...(req.query.slug && { slug: req.query.slug }),
+            ...(req.query.postId && { _id: req.query.postId }),
             ...(req.query.searchTerm && {
                 $or: [
                     { title: { $regex: req.query.searchTerm, $option: 'i' } },
@@ -69,9 +70,6 @@ export const getPosts = async (req, res, next) => {
             totalPosts,
             lastMonthPosts,
         });
-
-
-
     } catch (error) {
         next(error);
     }
@@ -84,17 +82,37 @@ export const deletePost = async (req, res, next) => {
         return next(errorHandler(403, "Only admin users can delete posts"));
     }
     try {
-        console.log(req.params);
-        const post = await Post.findByIdAndDelete(req.params.postId);
-        console.log(post);
-        if (!post) {
+        const postdeleted = await Post.findByIdAndDelete(req.params.postId);
+        if (!postdeleted) {
             return next(errorHandler(404, "Post not found"));
         }
-        res.status(200).json(post);
-
+        res.status(200).json("Post has been deleted.");
     }
     catch (error) {
         next(error); s
     }
 
+};
+
+export const updatepPost = async (req, res, next) => {
+    if (!req.user.isAdmin || req.user.id !== req.params.userId) {
+        return next(errorHandler(403, 'You are not allowed to update this post'));
+    }
+    try {
+        const updatedPost = await Post.findByIdAndUpdate(
+            req.params.postId,
+            {
+                $set: {
+                    title: req.body.title,
+                    content: req.body.content,
+                    category: req.body.category,
+                    image: req.body.image,
+                },
+            },
+            { new: true }
+        );
+        res.status(200).json(updatedPost);
+    } catch (error) {
+        next(error);
+    }
 };

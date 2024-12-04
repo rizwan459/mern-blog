@@ -7,6 +7,7 @@ import {
   TableRow,
   Modal,
   Button,
+  Alert,
 } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -18,6 +19,7 @@ export default function DashPosts() {
   const [userPosts, setUserPosts] = useState([]);
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [postDeleteSuccess, setPostDeleteSuccess] = useState(null);
   const [postIdToDelte, setPostIdToDelte] = useState("");
 
   useEffect(() => {
@@ -75,6 +77,7 @@ export default function DashPosts() {
         setUserPosts((prevPosts) =>
           prevPosts.filter((post) => post._id !== postIdToDelte)
         );
+        setPostDeleteSuccess("Post has been deleted successfully.");
       }
     } catch (error) {
       console.error("Error deleting post");
@@ -83,6 +86,13 @@ export default function DashPosts() {
 
   return (
     <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
+      <div>
+        {postDeleteSuccess && (
+          <Alert className="mt-5" color="success">
+            {postDeleteSuccess}  
+          </Alert>
+        )}
+      </div>
       {currentUser.isAdmin && userPosts.length > 0 ? (
         <>
           <Table hoverable className="shadow-md">
