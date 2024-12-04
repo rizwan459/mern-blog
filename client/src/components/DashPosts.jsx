@@ -89,13 +89,13 @@ export default function DashPosts() {
       <div>
         {postDeleteSuccess && (
           <Alert className="mt-5" color="success">
-            {postDeleteSuccess}  
+            {postDeleteSuccess}
           </Alert>
         )}
       </div>
       {currentUser.isAdmin && userPosts.length > 0 ? (
         <>
-          <Table hoverable className="shadow-md">
+          <Table hoverable className="shadow-md w-full">
             <TableHead>
               <TableHeadCell>Date Updated</TableHeadCell>
               <Table.HeadCell>Post Image</Table.HeadCell>
