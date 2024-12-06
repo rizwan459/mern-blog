@@ -63,20 +63,18 @@ export default function DashUsers() {
   const handleDeleteUser = async () => {
     setShowModal(false);
     try {
-      const res = await fetch(
-        `/api/user/deleteuser/${userIdToDelte}/${currentUser._id}/`,
-        {
-          method: "DELETE",
-        }
-      );
+      const res = await fetch(`/api/user/delete/${userIdToDelte}`, {
+        method: "DELETE",
+      });
       const data = await res.json();
       if (!res.ok) {
         console.log(data.message);
       } else {
-        setUserPosts((prevPosts) =>
-          prevPosts.filter((post) => post._id !== postIdToDelte)
+        setUsers((prevUsers) =>
+          prevUsers.filter((user) => user._id !== userIdToDelte)
         );
-        setPostDeleteSuccess("Post has been deleted successfully.");
+
+        setUserDeleteSuccess("User has been deleted successfully.");
       }
     } catch (error) {
       console.error("Error deleting user");
@@ -116,7 +114,7 @@ export default function DashUsers() {
                     <img
                       src={user.profilePicture}
                       alt={user.username}
-                      className="w-20 h-20 object-cover bg-gray-500 rounded-full"
+                      className="w-10 h-10 object-cover bg-gray-500 rounded-full"
                     />
                   </TableCell>
                   <TableCell>{user.username}</TableCell>
