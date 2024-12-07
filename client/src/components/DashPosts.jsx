@@ -116,7 +116,7 @@ export default function DashPosts() {
                     {new Date(post.updatedAt).toLocaleString()}
                   </TableCell>
                   <TableCell>
-                    <Link to={`/editPost/${post.slug}`}>
+                    <Link to={`/post/${post.slug}`}>
                       <img
                         src={post.image}
                         alt={post.title}
@@ -127,7 +127,7 @@ export default function DashPosts() {
                   <TableCell>
                     <Link
                       className="font-medium text-gray-900 dark:text-white"
-                      to={`/editPost/${post.slug}`}
+                      to={`/post/${post.slug}`}
                     >
                       {post.title}
                     </Link>
