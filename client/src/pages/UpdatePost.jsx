@@ -88,7 +88,6 @@ export default function UpdatePost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
     try {
       const res = await fetch(
         `/api/post/updatepost/${formData._id}/${currentUser._id}`,
@@ -107,8 +106,8 @@ export default function UpdatePost() {
       }
       if (res.ok) {
         setPostPublishError(null);
+        navigate(`/post/${data.slug}`);
         setPostPublishSuccess("Post has been updated successfully");
-        // navigate(`/post/${data.slug}`);
       }
     } catch (error) {
       setPostPublishError("Something went wrong");

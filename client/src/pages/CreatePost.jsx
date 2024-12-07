@@ -12,7 +12,6 @@ import {
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import { useNavigate } from "react-router-dom";
-import DashSidebar from "../components/DashSidebar";
 
 export default function CreatePost() {
   const [postImageFile, setPostImageFile] = useState(null);
@@ -94,9 +93,6 @@ export default function CreatePost() {
   };
   return (
     <div className="p-3 max-w-3xl mx-auto min-h-screen">
-      <div className="md:w-56">
-        <DashSidebar />
-      </div>
       <h1 className="text-center text-3xl my-7 font-semibold">Create a post</h1>
       <form action="flex flex-col gap-4" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-4 sm:flex-row justify-between">
