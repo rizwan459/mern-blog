@@ -2,6 +2,7 @@ import { Button, Spinner } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import CallToAction from "../components/CallToAction";
+import CommentSection from "../components/CommentSection";
 
 export default function PostPage() {
   const { postSlug } = useParams();
@@ -53,9 +54,9 @@ export default function PostPage() {
         </Button>
       </Link>
       <img
+        className=" mt-10 p-3 max-h-[600] w-full  object-cover"
         src={post && post.image}
         alt={post && post.title}
-        className=" mt-10 p-3 max-h-[600] w-full object-cover"
       />
       <div className="flex justify-between p-3 border-b border-slate-500 mx-auto w-full max-w-2xl text-xs">
         <span>{post && new Date(post.createdAt).toLocaleDateString()}</span>
@@ -70,6 +71,7 @@ export default function PostPage() {
       <div className="max-w-4xl mx-auto w-full">
         <CallToAction />
       </div>
+      <CommentSection postId={post._id} />
     </main>
   );
 }

@@ -153,7 +153,7 @@ export default function DashUsers() {
           )}
         </>
       ) : (
-        <p>You have no posts yet!</p>
+        <p>You have no user yet!</p>
       )}
       <Modal
         show={showModal}
