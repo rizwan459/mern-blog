@@ -124,8 +124,11 @@ export const getUser = async (req, res, next) => {
         if (!user) {
             return next(errorHandler(404, "User not found"));
         }
-        const { password, email, ...rest } = user._doc;
-        res.status(200).json(rest);
+        //  const { password, email, ...rest } = user._doc;
+        // res.status(200).json(rest);
+
+        const resti = { username: user.username, profilePicture: user.profilePicture }
+        res.status(200).json(resti);
     } catch (error) {
         next(error);
     }

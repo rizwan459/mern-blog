@@ -54,7 +54,7 @@ export default function PostPage() {
         </Button>
       </Link>
       <img
-        className=" mt-10 p-3 max-h-[600] w-full  object-cover"
+        className=" mt-10 p-3 max-h-10 w-full  object-cover"
         src={post && post.image}
         alt={post && post.title}
       />
