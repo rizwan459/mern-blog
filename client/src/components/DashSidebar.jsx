@@ -5,6 +5,7 @@ import {
   HiArrowSmRight,
   HiDocumentText,
   HiOutlineUsers,
+  HiPencilAlt,
 } from "react-icons/hi";
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -78,7 +79,13 @@ export default function DashSidebar() {
               </Sidebar.Item>
             </Link>
           )}
-
+          {currentUser.isAdmin && (
+            <Link to={"/createPost"}>
+              <Sidebar.Item icon={HiPencilAlt} as="div">
+                Create a post
+              </Sidebar.Item>
+            </Link>
+          )}
           <Link to="/Dashboard?tab=signout">
             <Sidebar.Item
               icon={HiArrowSmRight}

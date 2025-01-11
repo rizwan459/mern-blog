@@ -15,28 +15,29 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 export default function UpdatePost() {
-  const [postImageFile, setPostImageFile] = useState(null);
-  const [imageUloadProgress, setImageUploadProgress] = useState(null);
-  const [imageUloadError, setImageUploadError] = useState(null);
   const [postPublishError, setPostPublishError] = useState(null);
   const [postPublishSuccess, setPostPublishSuccess] = useState(null);
   const [formData, setFormData] = useState({});
   const { postId } = useParams();
   const navigate = useNavigate();
+  const [postImageFile, setPostImageFile] = useState(null);
+  const [imageUloadProgress, setImageUploadProgress] = useState(null);
+  const [imageUloadError, setImageUploadError] = useState(null);
 
   const { currentUser } = useSelector((state) => state.user);
-
+  console.log(formData);
   useEffect(() => {
     try {
       const fetchPost = async () => {
         // TODO: Implement fetch post by postId from server API.
         const res = await fetch(`/api/post/getposts?postId=${postId}`);
         const data = await res.json();
-
         if (!res.ok) {
-          console.log(data.message);
           setPostPublishError(data.message);
           return;
+        }
+        if (data.success === false) {
+          return setPostPublishError(data.message);
         }
         if (res.ok) {
           setPostPublishError(null);
@@ -88,9 +89,11 @@ export default function UpdatePost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("form data");
+    console.log(formData);
     try {
       const res = await fetch(
-        `/api/post/updatepost/${formData._id}/${currentUser._id}`,
+        `/api/post/updatepost/${postId}/${currentUser._id}`,
         {
           method: "PUT",
           headers: {
@@ -100,9 +103,14 @@ export default function UpdatePost() {
         }
       );
       const data = await res.json();
+      console.log("update post");
+      console.log(data);
       if (!res.ok) {
         setPostPublishError(data.message);
         return;
+      }
+      if (data.success === false) {
+        return setPostPublishError(data.message);
       }
       if (res.ok) {
         setPostPublishError(null);
@@ -124,22 +132,22 @@ export default function UpdatePost() {
             placeholder="Title"
             id="title"
             className="flex-1"
+            value={formData.title}
             onChange={(e) =>
               setFormData({
                 ...formData,
                 title: e.target.value,
               })
             }
-            value={formData.title}
           />
           <Select
+            value={formData.category}
             onChange={(e) =>
               setFormData({
                 ...formData,
                 category: e.target.value,
               })
             }
-            value={formData.category}
           >
             <option value="uncategorized">Select a category</option>
             <option value="javascript">JavaScricpt</option>
@@ -187,14 +195,16 @@ export default function UpdatePost() {
         )}
         <ReactQuill
           theme="snow"
-          placeholder="Write something.."
-          className="h-72 mb-12 mt-5"
+          placeholder="Write something..."
+          className="h-72 mb-12"
           required
-          onChange={(value) => setFormData({ ...formData, content: value })}
+          onChange={(value) => {
+            setFormData({ ...formData, content: value });
+          }}
           value={formData.content}
         />
         <Button type="submit" gradientDuoTone="purpleToPink" className="w-full">
-          Publish
+          Publish (Update Post)
         </Button>
         {postPublishError && (
           <Alert className="mt-5" color="failure">
