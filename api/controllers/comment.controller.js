@@ -114,7 +114,46 @@ export const getComments = async (req, res, next) => {
         const limit = parseInt(req.query.limit) || 9;
         const sortDirection = req.query.sort === 'desc' ? -1 : 1;
 
-        const comments = await Comment.find()
+        const comments = await Comment.aggregate([
+            {
+                $addFields: {
+                    postId_id: {
+                        $toObjectId: "$postId"
+                    },
+                    userId_id: {
+                        $toObjectId: "$userId"
+                    }
+                }
+            },
+            {
+                $lookup: {
+                    from: "posts",
+                    localField: "postId_id",
+                    foreignField: "_id",
+                    as: "post"
+                }
+            },
+
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userId_id",
+                    foreignField: "_id",
+                    as: "user"
+                }
+            },
+            {
+                $project: {
+                    updatedAt: 1,
+                    content: 1,
+                    numberOfLikes: 1,
+                    "post.slug": 1,
+                    "post.title": 1,
+                    "user.username": 1
+                }
+            }
+
+        ])
             .sort({ createdAt: sortDirection })
             .skip(startIndex)
             .limit(limit);

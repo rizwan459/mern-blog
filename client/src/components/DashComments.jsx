@@ -102,8 +102,8 @@ export default function DashComments() {
               <TableHeadCell>Date Created</TableHeadCell>
               <Table.HeadCell>Comment Content</Table.HeadCell>
               <Table.HeadCell>Number of Likes Name</Table.HeadCell>
-              <Table.HeadCell>PostId</Table.HeadCell>
-              <Table.HeadCell>UserId</Table.HeadCell>
+              <Table.HeadCell>Post Title</Table.HeadCell>
+              <Table.HeadCell>User Name</Table.HeadCell>
               <Table.HeadCell>Delete</Table.HeadCell>
             </TableHead>
             <TableBody className="divide-y">
@@ -117,8 +117,15 @@ export default function DashComments() {
                   </TableCell>
                   <TableCell>{comment.content}</TableCell>
                   <TableCell>{comment.numberOfLikes}</TableCell>
-                  <TableCell>{comment.postId}</TableCell>
-                  <TableCell>{comment.userId}</TableCell>
+                  <TableCell>
+                    <Link
+                      className="font-medium text-gray-900 dark:text-white"
+                      to={`/post/${comment.post[0].slug}`}
+                    >
+                      {comment.post[0].title}
+                    </Link>
+                  </TableCell>
+                  <TableCell>{comment.user[0].username}</TableCell>
 
                   <TableCell>
                     <span
