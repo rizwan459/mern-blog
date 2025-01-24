@@ -3,7 +3,7 @@ import { Button } from "flowbite-react";
 
 export default function CallToAction() {
   return (
-    <div className="flex flex-col sm:flex-row p-3 border border-teal-500 justify-center rounded-tl-3xl rounded-br-3xl">
+    <div className="flex flex-col sm:flex-row p-3 border border-teal-500 justify-center rounded-tl-3xl rounded-br-3xl ">
       <div className=" flex flex-col flex-auto justify-center">
         <h2 className="text-2xl">Want to learn more about JavaScript?</h2>
         <p className="text-gray-500 my-2">
@@ -21,9 +21,9 @@ export default function CallToAction() {
           </a>
         </Button>
       </div>
-      <div className="p-7">
+      <div className="p-5 sm:max-h-60">
         <img
-          className="h-50 w-full"
+          className="sm:max-h-40"
           src="https://firebasestorage.googleapis.com/v0/b/mern-blog-a45bd.firebasestorage.app/o/1733575880347_javascript%20post.jpg?alt=media&token=62c0f583-bf6a-476d-8e7b-8b56437de4af"
         />
       </div>

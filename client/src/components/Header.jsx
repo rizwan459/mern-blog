@@ -97,8 +97,8 @@ export default function Header() {
         <Navbar.Toggle />
       </div>
       <Navbar.Collapse>
-        <Link to="/">
-          <Navbar.Link active={path === "/"} as={"div"}>
+        <Link to="/home">
+          <Navbar.Link active={path === "/home"} as={"div"}>
             Home
           </Navbar.Link>
         </Link>
