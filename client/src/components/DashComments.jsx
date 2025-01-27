@@ -47,7 +47,7 @@ export default function DashComments() {
     const startIndex = comments.length;
     try {
       const res = await fetch(
-        `/api/comments/getcomments?startIndex=${startIndex}`
+        `/api/comment/getcomments?startIndex=${startIndex}`
       );
       const data = await res.json();
       if (res.ok) {
@@ -148,7 +148,7 @@ export default function DashComments() {
               onClick={handleShowMore}
               className="mt-5 w-full text-center text-gray-900 font-medium hover:text-gray-800"
             >
-              Load More Posts
+              Load More Comments
             </button>
           )}
         </>

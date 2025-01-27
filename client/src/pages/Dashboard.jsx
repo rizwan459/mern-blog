@@ -7,9 +7,12 @@ import DashUsers from "../components/DashUsers";
 import DashComments from "../components/DashComments";
 import DashboardComp from "../components/DashboardComp";
 
+import { useSelector } from "react-redux";
+
 export default function Dashboard() {
   const location = useLocation();
   const [tab, setTab] = useState("");
+  const { currentUser } = useSelector((state) => state.user);
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const tabFromUrl = urlParams.get("tab");
@@ -23,11 +26,7 @@ export default function Dashboard() {
       <div className="md:w-56">
         <DashSidebar />
       </div>
-      {!tab && (
-        <div className="text-center font-bold font-serif underline">
-          Dashboard
-        </div>
-      )}
+
       {/* profile... */}
       {tab === "profile" && <DashProfile />}
       {/* posts... */}
@@ -37,8 +36,9 @@ export default function Dashboard() {
       {/* comments */}
       {tab === "comments" && <DashComments />}
       {/* dashbord comp */}
-      {tab === "dash" && <DashboardComp />}
-      {tab === "" && <DashboardComp />}
+      {currentUser.isAdmin && tab === "dash" && <DashboardComp />}
+      {currentUser.isAdmin && tab === "" && <DashboardComp />}
+      {currentUser && !currentUser.isAdmin && <DashProfile />}
     </div>
   );
 }
